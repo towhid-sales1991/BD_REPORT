@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="lavender">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BD Report — Ideal Fastener</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7C6FE0">
+<link rel="icon" href="icon-192.png" type="image/png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BD Report">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+  /* ============ THEME SYSTEM ============ */
+  :root,
+  [data-theme="lavender"]{
+    --p-50:#F5F3FF; --p-100:#EDE9FE; --p-400:#A78BFA; --p-500:#8B7FE0; --p-600:#7C6FE0; --p-700:#6957D1;
+    --accent:#F472B6; --bg-a:#F3F0FC; --bg-b:#EBE7FB;
+  }
+  [data-theme="mint"]{
+    --p-50:#ECFDF7; --p-100:#D1FAE9; --p-400:#5EEAD4; --p-500:#2DD4A7; --p-600:#14B891; --p-700:#0D9B79;
+    --accent:#FBBF24; --bg-a:#EAFBF5; --bg-b:#DFF7EE;
+  }
+  [data-theme="sky"]{
+    --p-50:#EFF8FF; --p-100:#DBEEFE; --p-400:#7CC5FA; --p-500:#4DA8F5; --p-600:#2E8DE8; --p-700:#1E70C4;
+    --accent:#FB7185; --bg-a:#EDF6FE; --bg-b:#E0EFFC;
+  }
+  [data-theme="peach"]{
+    --p-50:#FFF6ED; --p-100:#FFE8D3; --p-400:#FDBA8C; --p-500:#FB9A5F; --p-600:#F7813C; --p-700:#DD6420;
+    --accent:#8B7FE0; --bg-a:#FFF7EE; --bg-b:#FEEEDF;
+  }
+  [data-theme="rose"]{
+    --p-50:#FFF0F6; --p-100:#FFDCEB; --p-400:#FDA4C7; --p-500:#F97CAA; --p-600:#F0578E; --p-700:#D63C71;
+    --accent:#5EEAD4; --bg-a:#FFF2F7; --bg-b:#FEE7F0;
+  }
+
+  :root{
+    --ink:#241F3D; --muted:#7A7590; --card:#FFFFFF; --border:#E9E5F5;
+    --success:#0FA37F; --error:#E5484D;
+    --shadow-sm: 0 2px 8px rgba(76, 60, 140, 0.06);
+    --shadow-md: 0 8px 30px rgba(76, 60, 140, 0.10);
+    --shadow-lg: 0 16px 48px rgba(76, 60, 140, 0.16);
+    --ease: cubic-bezier(.4,0,.2,1);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 100% -10%, var(--bg-a), transparent),
+      radial-gradient(1000px 500px at -10% 20%, var(--bg-b), transparent),
+      #FAFAFD;
+    color:var(--ink);
+    padding-bottom:110px;
+    -webkit-font-smoothing:antialiased;
+    transition:background .4s var(--ease);
+  }
+
+  header{
+    background:linear-gradient(135deg, var(--p-600) 0%, var(--p-700) 100%);
+    color:#fff;
+    padding:26px 20px 24px;
+    position:sticky; top:0; z-index:30;
+    box-shadow:0 8px 32px -8px rgba(80,60,160,0.35);
+    border-radius:0 0 28px 28px;
+    transition:background .4s var(--ease);
+  }
+  .header-top{display:flex; align-items:flex-start; justify-content:space-between; gap:12px;}
+  header h1{margin:0; font-size:21px; font-weight:800; letter-spacing:-0.02em;}
+  header p{margin:4px 0 0; font-size:12.5px; opacity:0.82; font-weight:500;}
+
+  .theme-picker{display:flex; gap:7px; padding-top:2px;}
+  .theme-dot{
+    width:22px; height:22px; border-radius:50%; cursor:pointer;
+    border:2px solid rgba(255,255,255,0.55);
+    box-shadow:0 2px 6px rgba(0,0,0,0.15);
+    transition:transform .2s var(--ease), border-color .2s;
+  }
+  .theme-dot:active{transform:scale(0.88);}
+  .theme-dot.active{border-color:#fff; transform:scale(1.12);}
+  .theme-dot.lavender{background:linear-gradient(135deg,#A78BFA,#7C6FE0);}
+  .theme-dot.mint{background:linear-gradient(135deg,#5EEAD4,#14B891);}
+  .theme-dot.sky{background:linear-gradient(135deg,#7CC5FA,#2E8DE8);}
+  .theme-dot.peach{background:linear-gradient(135deg,#FDBA8C,#F7813C);}
+  .theme-dot.rose{background:linear-gradient(135deg,#FDA4C7,#F0578E);}
+
+  .zip-divider{
+    height:5px;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.55) 0 6px,transparent 6px 13px);
+    opacity:0.55; margin-top:16px; border-radius:4px;
+  }
+
+  main{max-width:560px; margin:0 auto; padding:20px 16px 0; animation:fadeUp .5s var(--ease);}
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+  .card{
+    background:var(--card);
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:16px;
+    border:1px solid var(--border);
+    box-shadow:var(--shadow-sm);
+    transition:box-shadow .25s var(--ease), transform .25s var(--ease);
+  }
+  .card:focus-within{box-shadow:var(--shadow-md); transform:translateY(-1px);}
+
+  label{display:block; font-size:13px; font-weight:600; color:var(--ink); margin-bottom:7px;}
+  .req{color:var(--accent);}
+
+  input[type=text], input[type=date], textarea, select{
+    width:100%; padding:13px 15px;
+    border:1.5px solid var(--border); border-radius:14px;
+    font-size:16px; font-family:inherit; color:var(--ink);
+    background:var(--p-50);
+    transition:border-color .2s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  input:focus, textarea:focus, select:focus{
+    outline:none; border-color:var(--p-500); background:#fff;
+    box-shadow:0 0 0 4px var(--p-100);
+  }
+  textarea{resize:vertical; min-height:84px; line-height:1.5;}
+  .field{margin-bottom:17px;}
+  .field:last-child{margin-bottom:0;}
+  .hint{font-size:12px; color:var(--muted); margin-top:6px; line-height:1.4;}
+
+  .footer-bar{
+    position:fixed; bottom:0; left:0; right:0;
+    background:rgba(255,255,255,0.85);
+    -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+    border-top:1px solid var(--border);
+    padding:14px 16px calc(14px + env(safe-area-inset-bottom));
+    box-shadow:0 -8px 32px rgba(76,60,140,0.10);
+    z-index:20;
+  }
+  .footer-inner{max-width:560px; margin:0 auto;}
+
+  button#submitBtn{
+    width:100%; padding:16px;
+    background:linear-gradient(135deg, var(--p-600), var(--p-700));
+    color:#fff; border:none; border-radius:16px;
+    font-size:16px; font-weight:700; letter-spacing:0.01em;
+    cursor:pointer;
+    box-shadow:0 10px 24px -6px var(--p-500);
+    transition:transform .15s var(--ease), box-shadow .15s var(--ease), background .3s;
+  }
+  button#submitBtn:active{transform:scale(0.97); box-shadow:0 4px 14px -4px var(--p-500);}
+  button#submitBtn:disabled{background:#C7C2DC; box-shadow:none; cursor:default;}
+
+  .status{text-align:center; font-size:13px; margin-top:10px; min-height:18px; font-weight:600;}
+  .status.ok{color:var(--success);}
+  .status.err{color:var(--error);}
+
+  .brand-footer{text-align:center; font-size:11px; color:var(--muted); padding:20px 0 12px; font-weight:500;}
+
+  .section-label{
+    font-size:11px; font-weight:800; color:var(--p-600);
+    text-transform:uppercase; letter-spacing:0.07em; margin-bottom:12px;
+  }
+
+  .toggle-group{
+    display:flex; gap:5px; background:var(--p-50); padding:5px; border-radius:16px;
+  }
+  .toggle-btn{
+    flex:1; padding:13px 8px; border:none; background:transparent; border-radius:12px;
+    font-size:13.5px; font-weight:700; color:var(--muted); cursor:pointer;
+    transition:background .25s var(--ease), color .25s var(--ease), box-shadow .25s var(--ease);
+  }
+  .toggle-btn.active{background:#fff; color:var(--p-700); box-shadow:var(--shadow-sm);}
+
+  .advanced-toggle{
+    font-size:12.5px; font-weight:700; color:var(--p-600); background:var(--p-50);
+    border:none; border-radius:12px; cursor:pointer; padding:11px 14px; text-align:left; width:100%;
+    display:flex; justify-content:space-between; align-items:center;
+    transition:background .2s;
+  }
+  .advanced-toggle:active{background:var(--p-100);}
+
+  select{appearance:none; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%237A7590' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 15px center; padding-right:38px;
+  }
+
+  ::placeholder{color:#B4AFCB;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <h1>BD Report</h1>
+      <p>Ideal Fastener Corporation</p>
+    </div>
+    <div class="theme-picker" id="themePicker">
+      <div class="theme-dot lavender active" data-theme="lavender" onclick="setTheme('lavender')"></div>
+      <div class="theme-dot mint" data-theme="mint" onclick="setTheme('mint')"></div>
+      <div class="theme-dot sky" data-theme="sky" onclick="setTheme('sky')"></div>
+      <div class="theme-dot peach" data-theme="peach" onclick="setTheme('peach')"></div>
+      <div class="theme-dot rose" data-theme="rose" onclick="setTheme('rose')"></div>
+    </div>
+  </div>
+  <div class="zip-divider"></div>
+</header>
+
+<main>
+  <div class="card" style="padding:6px;">
+    <div class="toggle-group">
+      <button type="button" class="toggle-btn active" id="btnNew" onclick="setMode('new')">🆕 New Initiative</button>
+      <button type="button" class="toggle-btn" id="btnFollowup" onclick="setMode('followup')">🔁 Follow-up</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">Tab / Year</div>
+    <div class="field">
+      <label>Which tab? <span class="req">*</span></label>
+      <select id="tabSelect"><option value="">Loading tabs...</option></select>
+    </div>
+  </div>
+
+  <form id="reportForm">
+
+    <!-- NEW INITIATIVE FIELDS -->
+    <div id="newFields">
+      <div class="card">
+        <div class="section-label">Initiative Details</div>
+        <div class="field">
+          <label>BD Initiative Date <span class="req">*</span></label>
+          <input type="date" id="initiativeDate">
+        </div>
+        <div class="field">
+          <label>Segment</label>
+          <input type="text" id="segment" placeholder="e.g. TEXTILE APPAREL" list="segmentList">
+          <datalist id="segmentList"></datalist>
+        </div>
+        <div class="field">
+          <label>Customer Name <span class="req">*</span></label>
+          <input type="text" id="customerName" placeholder="e.g. Debonair" list="customerListNew">
+          <datalist id="customerListNew"></datalist>
+        </div>
+        <div class="field">
+          <label>Buyer Name <span class="req">*</span></label>
+          <input type="text" id="buyerName" placeholder="e.g. Marks CA">
+        </div>
+        <div class="field">
+          <label>Current Supplier</label>
+          <input type="text" id="currentSupplier" placeholder="e.g. YKK">
+        </div>
+        <div class="field">
+          <label>Business Potential</label>
+          <input type="text" id="businessPotential" placeholder="e.g. 30K PCS/Season">
+        </div>
+        <div class="field">
+          <label>Major Zipper Consumption (Item Codes)</label>
+          <input type="text" id="zipperConsumption" placeholder="e.g. DO56/ANBO86">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Discussion</div>
+        <div class="field">
+          <label>First Meeting Recap <span class="req">*</span></label>
+          <textarea id="firstRecap" placeholder="What was discussed..."></textarea>
+        </div>
+        <div class="field">
+          <label>What we need to do to get the business?</label>
+          <textarea id="nextSteps" placeholder="Next steps / plan of action..."></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <button type="button" class="advanced-toggle" onclick="toggleAdvanced()">
+          <span>+ GAM / Buying Office details (optional)</span> <span id="advArrow">▾</span>
+        </button>
+        <div id="advancedFields" style="display:none; margin-top:14px;">
+          <div class="field">
+            <label>GAM/Buying Office Initiative Date</label>
+            <input type="date" id="gamDate">
+          </div>
+          <div class="field">
+            <label>GAM Name & Country</label>
+            <input type="text" id="gamNameCountry" placeholder="e.g. Arnoud, Germany">
+          </div>
+          <div class="field">
+            <label>Buying Office Name</label>
+            <input type="text" id="buyingOfficeName" placeholder="e.g. OSPIG">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOLLOW-UP FIELDS -->
+    <div id="followupFields" style="display:none;">
+      <div class="card">
+        <div class="section-label">Select Initiative</div>
+        <div class="field">
+          <label>Customer — Buyer <span class="req">*</span></label>
+          <select id="initiativeSelect"><option value="">Select a tab first...</option></select>
+          <div class="hint">Pick from your existing BD initiatives in the selected tab.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-label">Follow-up Update</div>
+        <div class="field">
+          <label>Week# <span class="req">*</span></label>
+          <input type="text" id="week" placeholder="e.g. Week 9 / 9th May">
+        </div>
+        <div class="field">
+          <label>Follow-up Recap <span class="req">*</span></label>
+          <textarea id="recap" placeholder="What's the update..."></textarea>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</main>
+
+<div class="footer-bar">
+  <div class="footer-inner">
+    <button id="submitBtn" onclick="submitReport()" type="button">Send to Outlook</button>
+    <div class="status" id="status-msg"></div>
+  </div>
+</div>
+
+<div class="brand-footer">System designed &amp; engineered by Towhid</div>
+
+<script>
+// ====== PASTE YOUR APPS SCRIPT WEB APP URL HERE ======
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGdjxP3iKMn0nuHsUGaH8BTAO3uZMxpCrG5k3n3gIY304A6PZc2wRNdb-yz7vFUN0u/exec";
+// ========================================================
+
+let mode = "new";
+let allInitiatives = []; // cache for the currently selected tab
+
+// ---------- Theme handling ----------
+const THEME_KEY = "bd_report_theme";
+function setTheme(t){
+  document.documentElement.setAttribute("data-theme", t);
+  document.querySelectorAll(".theme-dot").forEach(d => d.classList.toggle("active", d.dataset.theme === t));
+  localStorage.setItem(THEME_KEY, t);
+  const colors = { lavender:"#7C6FE0", mint:"#14B891", sky:"#2E8DE8", peach:"#F7813C", rose:"#F0578E" };
+  document.querySelector('meta[name="theme-color"]').setAttribute("content", colors[t] || "#7C6FE0");
+}
+(function initTheme(){
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved) setTheme(saved);
+})();
+
+function setMode(m){
+  mode = m;
+  document.getElementById("btnNew").classList.toggle("active", m === "new");
+  document.getElementById("btnFollowup").classList.toggle("active", m === "followup");
+  document.getElementById("newFields").style.display = m === "new" ? "block" : "none";
+  document.getElementById("followupFields").style.display = m === "followup" ? "block" : "none";
+  setStatus("", "");
+}
+
+function toggleAdvanced(){
+  const el = document.getElementById("advancedFields");
+  const arrow = document.getElementById("advArrow");
+  const show = el.style.display === "none";
+  el.style.display = show ? "block" : "none";
+  arrow.textContent = show ? "▴" : "▾";
+}
+
+function setStatus(msg, cls){
+  const el = document.getElementById("status-msg");
+  el.textContent = msg;
+  el.className = "status " + (cls || "");
+}
+
+// Load tabs on page load
+if (SCRIPT_URL.indexOf("PASTE_YOUR") !== 0) {
+  fetch(SCRIPT_URL + "?action=tabs")
+    .then(res => res.json())
+    .then(tabs => {
+      const sel = document.getElementById("tabSelect");
+      sel.innerHTML = tabs.map(t => `<option value="${t}">${t}</option>`).join("");
+      if (tabs.length) {
+        sel.value = tabs[tabs.length - 1];
+        loadInitiatives(sel.value);
+      }
+    })
+    .catch(() => {
+      document.getElementById("tabSelect").innerHTML = '<option value="">Failed to load tabs</option>';
+    });
+
+  document.getElementById("tabSelect").addEventListener("change", (e) => loadInitiatives(e.target.value));
+}
+
+function loadInitiatives(tab){
+  if (!tab) return;
+  document.getElementById("initiativeSelect").innerHTML = "<option value=''>Loading...</option>";
+  fetch(SCRIPT_URL + "?action=initiatives&tab=" + encodeURIComponent(tab))
+    .then(res => res.json())
+    .then(list => {
+      allInitiatives = list;
+      const sel = document.getElementById("initiativeSelect");
+      sel.innerHTML = list.map(x =>
+        `<option value="${x.row}">${x.customerName} — ${x.buyerName || "(no buyer)"}</option>`
+      ).join("");
+
+      const uniqueCustomers = [...new Set(list.map(x => x.customerName))];
+      document.getElementById("customerListNew").innerHTML =
+        uniqueCustomers.map(n => `<option value="${n.replace(/"/g,"&quot;")}"></option>`).join("");
+    })
+    .catch(() => {
+      document.getElementById("initiativeSelect").innerHTML = "<option value=''>Failed to load</option>";
+    });
+}
+
+function submitReport(){
+  const tab = document.getElementById("tabSelect").value;
+  if (!tab){
+    setStatus("Please select a tab.", "err");
+    return;
+  }
+
+  let data = { tab: tab };
+
+  if (mode === "new"){
+    data.action = "new";
+    data.initiativeDate = document.getElementById("initiativeDate").value;
+    data.segment = document.getElementById("segment").value.trim();
+    data.customerName = document.getElementById("customerName").value.trim();
+    data.buyerName = document.getElementById("buyerName").value.trim();
+    data.currentSupplier = document.getElementById("currentSupplier").value.trim();
+    data.businessPotential = document.getElementById("businessPotential").value.trim();
+    data.zipperConsumption = document.getElementById("zipperConsumption").value.trim();
+    data.firstRecap = document.getElementById("firstRecap").value.trim();
+    data.nextSteps = document.getElementById("nextSteps").value.trim();
+    data.gamDate = document.getElementById("gamDate").value;
+    data.gamNameCountry = document.getElementById("gamNameCountry").value.trim();
+    data.buyingOfficeName = document.getElementById("buyingOfficeName").value.trim();
+
+    if (!data.initiativeDate || !data.customerName || !data.buyerName || !data.firstRecap){
+      setStatus("Please fill Date, Customer Name, Buyer Name, and First Meeting Recap.", "err");
+      return;
+    }
+  } else {
+    const sel = document.getElementById("initiativeSelect");
+    const row = sel.value;
+    if (!row){
+      setStatus("Please select an initiative to follow up on.", "err");
+      return;
+    }
+    const chosen = allInitiatives.find(x => String(x.row) === String(row));
+    data.action = "followup";
+    data.row = row;
+    data.customerName = chosen ? chosen.customerName : "";
+    data.buyerName = chosen ? chosen.buyerName : "";
+    data.week = document.getElementById("week").value.trim();
+    data.recap = document.getElementById("recap").value.trim();
+
+    if (!data.week || !data.recap){
+      setStatus("Please fill Week# and Follow-up Recap.", "err");
+      return;
+    }
+  }
+
+  if (SCRIPT_URL.indexOf("PASTE_YOUR") === 0){
+    setStatus("Setup needed: paste your Apps Script URL in the code first.", "err");
+    return;
+  }
+
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+  setStatus("Sending report...", "");
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.result !== "success") throw new Error(res.message || "Unknown error");
+    setStatus("✓ Sent and saved!", "ok");
+    if (mode === "new"){
+      ["segment","customerName","buyerName","currentSupplier","businessPotential","zipperConsumption","firstRecap","nextSteps","gamNameCountry","buyingOfficeName"].forEach(id => {
+        document.getElementById(id).value = "";
+      });
+    } else {
+      document.getElementById("week").value = "";
+      document.getElementById("recap").value = "";
+    }
+    loadInitiatives(tab);
+    btn.disabled = false;
+    btn.textContent = "Send to Outlook";
+  })
+  .catch(err => {
+    setStatus("Failed to send: " + err.message, "err");
+    btn.disabled = false;
+    btn.textContent = "Send to Outlook";
+  });
+}
+
+// Register service worker for offline app-shell + installability
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js").catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>

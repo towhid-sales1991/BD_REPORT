@@ -1,0 +1,15 @@
+{
+  "name": "BD Initiative Report — Ideal Fastener",
+  "short_name": "BD Report",
+  "description": "Log new BD initiatives and follow-up updates on the go — Ideal Fastener Export Sales",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5F5F9",
+  "theme_color": "#7C6FE0",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
