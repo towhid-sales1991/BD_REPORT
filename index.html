@@ -179,6 +179,14 @@
     transition:background .2s;
   }
   .advanced-toggle:active{background:var(--p-100);}
+  .checkbox-row{
+    display:flex; align-items:center; gap:10px;
+    font-size:13.5px; font-weight:600; color:var(--ink);
+    cursor:pointer; margin-bottom:0;
+  }
+  .checkbox-row input[type=checkbox]{
+    width:20px; height:20px; accent-color:var(--p-600); cursor:pointer; flex-shrink:0;
+  }
 
   select{appearance:none; -webkit-appearance:none;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%237A7590' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
@@ -292,6 +300,23 @@
           </div>
         </div>
       </div>
+
+      <div class="card">
+        <label class="checkbox-row">
+          <input type="checkbox" id="alsoFollowup" onchange="toggleAlsoFollowup()">
+          <span>Also log a follow-up right now (same submit)</span>
+        </label>
+        <div id="alsoFollowupFields" style="display:none; margin-top:14px;">
+          <div class="field">
+            <label>Week# <span class="req">*</span></label>
+            <input type="text" id="alsoWeek" placeholder="e.g. Week 9 / 9th May">
+          </div>
+          <div class="field">
+            <label>Follow-up Recap <span class="req">*</span></label>
+            <textarea id="alsoRecap" placeholder="What's the update..."></textarea>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- FOLLOW-UP FIELDS -->
@@ -368,6 +393,11 @@ function toggleAdvanced(){
   arrow.textContent = show ? "▴" : "▾";
 }
 
+function toggleAlsoFollowup(){
+  const checked = document.getElementById("alsoFollowup").checked;
+  document.getElementById("alsoFollowupFields").style.display = checked ? "block" : "none";
+}
+
 function setStatus(msg, cls){
   const el = document.getElementById("status-msg");
   el.textContent = msg;
@@ -442,6 +472,16 @@ function submitReport(){
       setStatus("Please fill Date, Customer Name, Buyer Name, and First Meeting Recap.", "err");
       return;
     }
+
+    data.alsoFollowup = document.getElementById("alsoFollowup").checked;
+    if (data.alsoFollowup){
+      data.week = document.getElementById("alsoWeek").value.trim();
+      data.recap = document.getElementById("alsoRecap").value.trim();
+      if (!data.week || !data.recap){
+        setStatus("Please fill Week# and Follow-up Recap, or uncheck the follow-up option.", "err");
+        return;
+      }
+    }
   } else {
     const sel = document.getElementById("initiativeSelect");
     const row = sel.value;
@@ -483,9 +523,11 @@ function submitReport(){
     if (res.result !== "success") throw new Error(res.message || "Unknown error");
     setStatus("✓ Sent and saved!", "ok");
     if (mode === "new"){
-      ["segment","customerName","buyerName","currentSupplier","businessPotential","zipperConsumption","firstRecap","nextSteps","gamNameCountry","buyingOfficeName"].forEach(id => {
+      ["segment","customerName","buyerName","currentSupplier","businessPotential","zipperConsumption","firstRecap","nextSteps","gamNameCountry","buyingOfficeName","alsoWeek","alsoRecap"].forEach(id => {
         document.getElementById(id).value = "";
       });
+      document.getElementById("alsoFollowup").checked = false;
+      document.getElementById("alsoFollowupFields").style.display = "none";
     } else {
       document.getElementById("week").value = "";
       document.getElementById("recap").value = "";
